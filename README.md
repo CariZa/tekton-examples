@@ -57,17 +57,17 @@ You should see some pods in the tekton-pipelines namespaces:
 
 Tekton is made up of **6 main components**:
 
-- Step 
+* Step 
 ⋅⋅* run commands
-- Task 
+* Task 
 ⋅⋅* list of steps
-- Pipeline 
+* Pipeline 
 ⋅⋅* graph of tasks
-- Pipeline Resource 
+* Pipeline Resource 
 ⋅⋅* a resource that is declared and then referenced and used in tasks and pipelines
-- Task Run 
+* Task Run 
 ⋅⋅* invoke a task  
-- Pipeline Run
+* Pipeline Run
 ⋅⋅* invoke a pipeline
 
 #### Useful Youtube Videos:
@@ -125,7 +125,7 @@ Run these yaml scripts in this order:
 
 Some gotchas:
 
-- Some of the reesources depend on other resources existing before they run
+- Some of the resources depend on other resources existing before they run
 - TODO: Check if there's a way to flag a resource to only run once another resource exists
 
 Check the dashboard:
