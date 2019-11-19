@@ -58,17 +58,17 @@ You should see some pods in the tekton-pipelines namespaces:
 Tekton is made up of **6 main components**:
 
 * Step 
-⋅⋅* run commands
+    run commands
 * Task 
-⋅⋅* list of steps
+    list of steps
 * Pipeline 
-⋅⋅* graph of tasks
+    graph of tasks
 * Pipeline Resource 
-⋅⋅* a resource that is declared and then referenced and used in tasks and pipelines
+    a resource that is declared and then referenced and used in tasks and pipelines
 * Task Run 
-⋅⋅* invoke a task  
+    invoke a task  
 * Pipeline Run
-⋅⋅* invoke a pipeline
+    invoke a pipeline
 
 #### Useful Youtube Videos:
 
@@ -101,7 +101,7 @@ View the dashboard by using port-forward:
 
     $ kubectl port-forward tekton-dashboard-xxx-xxx -n tekton-pipelines  9097:9097
 
-You should not be able to view the dashboard at:
+You should now be able to view the dashboard at:
 
 [http://localhost:9097](http://localhost:9097)
 
