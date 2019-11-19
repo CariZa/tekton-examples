@@ -116,7 +116,17 @@ A simple github read process
 
 Run a simple example where you will set a public github repo as a Pipeline Resource
 
-    $ kubectl create -f ./example-github-read/
+Run these yaml scripts in this order:
+
+    $ kubectl create -f ./example-github-read/resource.yaml
+    $ kubectl create -f ./example-github-read/task.yaml
+    $ kubectl create -f ./example-github-read/pipeline.yaml 
+    $ kubectl create -f ./example-github-read/pipeline-run.yaml 
+
+Some gotchas:
+
+- Some of the reesources depend on other resources existing before they run
+- TODO: Check if there's a way to flag a resource to only run once another resource exists
 
 Check the dashboard:
 
