@@ -58,17 +58,29 @@ You should see some pods in the tekton-pipelines namespaces:
 Tekton is made up of **6 main components**:
 
 * Step 
+
     run commands
+
 * Task 
+
     list of steps
+
 * Pipeline 
+
     graph of tasks
+
 * Pipeline Resource 
+
     a resource that is declared and then referenced and used in tasks and pipelines
+
 * Task Run 
+
     invoke a task  
+
 * Pipeline Run
+
     invoke a pipeline
+    
 
 #### Useful Youtube Videos:
 
