@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: pipeline-test
+spec:
+  resources:
+    - name: github-repo
+      type: git
+  tasks:
+    - name: pipeline-read-task
+      taskRef:
+        name: read-task
+      resources:
+        inputs:
+          - name: github-repo
+            resource: github-repo
+        
