@@ -1,5 +1,57 @@
 # tekton-examples
-A practice repo to collect examples of using tekton with kubernetes
+
+A practice repo to collect examples of using tekton with kubernetes.
+
+Please note, this is just a reference for practicing with, this is not necessarily production ready.
+
+** Information on how to run the examples are below the references **
+
+## Tekton setup notes
+
+These steps were taken and tweaked from this source:
+
+[https://github.com/tektoncd/pipeline/blob/master/docs/install.md](https://github.com/tektoncd/pipeline/blob/master/docs/install.md)
+
+Setup some environment variables:
+
+    export CLUSTER_NAME=tekton-prac
+    export CLUSTER_ZONE=europe-west4-a
+    export NUM_NODES=2
+
+Check values are set:
+
+    echo $CLUSTER_NAME && echo $CLUSTER_ZONE && echo $NUM_NODES
+
+Create the gc cluster:
+
+    $ gcloud container clusters create $CLUSTER_NAME --zone=$CLUSTER_ZONE --num-nodes=$NUM_NODES
+
+    $ gcloud container clusters list
+
+To delete the cluster (if you want to start from scratch again):
+
+    $ gcloud container clusters delete $CLUSTER_NAME
+
+Grant cluster-admin permissions to the current user:
+
+    $ kubectl create clusterrolebinding cluster-admin-binding \
+    --clusterrole=cluster-admin \
+    --user=$(gcloud config get-value core/account)
+
+Install Tekton Pipelines:
+
+    $ kubectl apply --filename https://storage.googleapis.com/tekton-releases/pipeline/latest/release.yaml
+
+Check installed:
+
+    $ kubectl get pods --namespace tekton-pipelines
+
+You should see some pods in the tekton-pipelines namespaces:
+
+    tekton-pipelines-controller-...
+    tekton-pipelines-webhook-...
+
+
 
 ## Notes on Tekton
 
@@ -51,11 +103,12 @@ View the dashboard by using port-forward:
 
 You should not be able to view the dashboard at:
 
-    http://localhost:9097
+    [http://localhost:9097](http://localhost:9097)
 
 
 
-## Examples
+
+# Examples
 
 ### Example 1
 
@@ -63,4 +116,9 @@ A simple github read process
 
 Run a simple example where you will set a public github repo as a Pipeline Resource
 
-    $ kubectl create 
+    $ kubectl create -f ./example-github-read/
+
+Check the dashboard:
+
+[http://localhost:9097/#/namespaces/default/pipelineruns/pipelinerun-test](http://localhost:9097/#/namespaces/default/pipelineruns/pipelinerun-test)
+
