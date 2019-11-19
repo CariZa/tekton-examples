@@ -103,7 +103,7 @@ View the dashboard by using port-forward:
 
 You should not be able to view the dashboard at:
 
-    [http://localhost:9097](http://localhost:9097)
+[http://localhost:9097](http://localhost:9097)
 
 
 
