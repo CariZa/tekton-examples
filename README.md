@@ -204,13 +204,13 @@ Or we can generate the pipeline run dynamically using a name + timestamp approac
     apiVersion: tekton.dev/v1alpha1
     kind: PipelineRun
     metadata:
-    name: pipelinerun-test-$(date +%s)
+      name: pipelinerun-test-$(date +%s)
     spec:
-    pipelineRef:
+      pipelineRef:
         name: pipeline-test
-    resources:
+      resources:
         - name: github-repo
-        resourceRef:
+          resourceRef:
             name: github-repo
     EOF
 
@@ -226,13 +226,13 @@ You can dynamically create PipelineRuns using the "kubectl create" command direc
     apiVersion: tekton.dev/v1alpha1
     kind: PipelineRun
     metadata:
-    name: pipelinerun-test-$(date +%s)
+      name: pipelinerun-test-$(date +%s)
     spec:
-    pipelineRef:
+      pipelineRef:
         name: pipeline-test
-    resources:
+      resources:
         - name: github-repo
-        resourceRef:
+          resourceRef:
             name: github-repo
     EOF
 
@@ -241,3 +241,4 @@ Response Example:
     pipelinerun.tekton.dev/pipelinerun-test-1574241433 created
 
 Going forwards in these examples I'm going to stick with the dynamic approach.
+
