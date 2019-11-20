@@ -136,7 +136,7 @@ You should now be able to view the dashboard at:
 
 These examples are assuming you have made a clone of this repo, or at least copied the files and structured them like they are in this repo.
 
-### Example 1
+## Example 1
 
 A simple github read process
 
@@ -192,7 +192,7 @@ If we relooked this example a bit we ran these setup steps all at once:
 
 Then every time we want to trigger the pipeline we would need to have a unique named PipelineRun.
 
-#### PipelineRuns
+### PipelineRuns
 
 Here are some ideas on how to tackle the pipeline run:
 
@@ -242,3 +242,10 @@ Response Example:
 
 Going forwards in these examples I'm going to stick with the dynamic approach.
 
+### Review Example 1
+
+Now that you have run through an example, let's quickly visualise the Tekton flow we created:
+
+./images/TektonExample1.png
+
+![Tekton Example 1 Diagram](./images/TektonExample1.png)
