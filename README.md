@@ -46,7 +46,7 @@ Check installed:
 
     $ kubectl get pods --namespace tekton-pipelines
 
-You should see some pods in the tekton-pipelines namespaces:
+You should see some pods in the "tekton-pipelines" namespace:
 
     tekton-pipelines-controller-...
     tekton-pipelines-webhook-...
@@ -80,7 +80,7 @@ Tekton is made up of **6 main components**:
 * Pipeline Run
 
     invoke a pipeline
-    
+
 
 #### Useful Youtube Videos:
 
@@ -101,7 +101,15 @@ Tekton is made up of **6 main components**:
 
 Notes on setting up the dashboard:
 
-Simplest way to access the dashboard locally, use port-forward:
+Install the dashboard with this command:
+
+    $ kubectl apply --filename https://github.com/tektoncd/dashboard/releases/download/v0.2.1/dashboard-latest-release.yaml
+
+Note - Command taken from this source: [https://github.com/tektoncd/dashboard](https://github.com/tektoncd/dashboard)
+
+Simplest way to access the dashboard locally, use port-forward
+
+First check the dashboard pod is running:
 
     $ kubectl get pods --namespace tekton-pipelines
 
