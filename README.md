@@ -99,6 +99,10 @@ Tekton is made up of **6 main components**:
 
 [https://github.com/tektoncd/dashboard](https://github.com/tektoncd/dashboard)
 
+# Dashabord
+
+### Setup the dashboard for visibility 
+
 Notes on setting up the dashboard:
 
 Install the dashboard with this command:
@@ -130,25 +134,110 @@ You should now be able to view the dashboard at:
 
 # Examples
 
+These examples are assuming you have made a clone of this repo, or at least copied the files and structured them like they are in this repo.
+
 ### Example 1
 
 A simple github read process
 
-Run a simple example where you will set a public github repo as a Pipeline Resource
+Run a simple example where you will set a public github repo as a **Pipeline Resource**. 
+
+Some more notes:
+
+A **task** will pull this repo into an ubuntu image and using the **Pipeline Resource** as an input.
+The pipeline will list the task and also map in the **Pipeline Resource** as input.
+
 
 Run these yaml scripts in this order:
 
-    $ kubectl create -f ./example-github-read/resource.yaml
-    $ kubectl create -f ./example-github-read/task.yaml
-    $ kubectl create -f ./example-github-read/pipeline.yaml 
-    $ kubectl create -f ./example-github-read/pipeline-run.yaml 
+    $ kubectl create -f ./example-github-read/
 
 Some gotchas:
 
-- Some of the resources depend on other resources existing before they run
-- TODO: Check if there's a way to flag a resource to only run once another resource exists
+- Only run the pipelinerun once all the resources have successfully been created
+
+    $ kubectl get pipeline,pipelineresource,task
+
+You should see these resources
+
+    NAME                                AGE
+    pipeline.tekton.dev/pipeline-test   1m
+
+    NAME                                      AGE
+    pipelineresource.tekton.dev/github-repo   1m
+
+    NAME                        AGE
+    task.tekton.dev/read-task   1m
 
 Check the dashboard:
 
 [http://localhost:9097/#/namespaces/default/pipelineruns/pipelinerun-test](http://localhost:9097/#/namespaces/default/pipelineruns/pipelinerun-test)
 
+
+Creating the PipelineRun
+
+If you try run a PipelineRun as a single yaml script, for example:
+
+    $ kubectl create -f ./example-github-read/pipeline-run.yaml 
+
+The first time it will create and run fine. On the second attempt you will get an error.
+
+The PipelineRun is the trigger, so you would keep the trigger seperate from the configuration/setup.
+
+If we relooked this example a bit we ran these setup steps all at once:
+
+    $ kubectl create -f ./example-github-read/resource.yaml
+    $ kubectl create -f ./example-github-read/task.yaml
+    $ kubectl create -f ./example-github-read/pipeline.yaml 
+
+Then every time we want to trigger the pipeline we would need to have a unique named PipelineRun.
+
+#### PipelineRuns
+
+Here are some ideas on how to tackle the pipeline run:
+
+You can manually use the dashboard to trigger the PipelineRuns by going to the "pipelineruns" tab and clicking "Create PipelineRun".
+
+Or we can generate the pipeline run dynamically using a name + timestamp approach:
+
+    cat <<EOF >./pipeline-run-$(date +%s).yaml
+    apiVersion: tekton.dev/v1alpha1
+    kind: PipelineRun
+    metadata:
+    name: pipelinerun-test-$(date +%s)
+    spec:
+    pipelineRef:
+        name: pipeline-test
+    resources:
+        - name: github-repo
+        resourceRef:
+            name: github-repo
+    EOF
+
+You would then need to create that PipelineRun  script:
+
+    $ kubecl create -f pipeline-run-xxxxx.yaml
+
+An approach I felt worked better:
+
+You can dynamically create PipelineRuns using the "kubectl create" command directly, this will just create the kubernetes resource and run it but not save a file:
+
+    cat <<EOF | kubectl create -f -
+    apiVersion: tekton.dev/v1alpha1
+    kind: PipelineRun
+    metadata:
+    name: pipelinerun-test-$(date +%s)
+    spec:
+    pipelineRef:
+        name: pipeline-test
+    resources:
+        - name: github-repo
+        resourceRef:
+            name: github-repo
+    EOF
+
+Response Example:
+
+    pipelinerun.tekton.dev/pipelinerun-test-1574241433 created
+
+Going forwards in these examples I'm going to stick with the dynamic approach.
