@@ -99,7 +99,7 @@ Tekton is made up of **6 main components**:
 
 [https://github.com/tektoncd/dashboard](https://github.com/tektoncd/dashboard)
 
-# Dashabord
+# Dashboard
 
 ### Setup the dashboard for visibility 
 
@@ -139,6 +139,8 @@ These examples are assuming you have made a clone of this repo, or at least copi
 ## Example 1
 
 A simple github read process
+
+### Goal: 
 
 Run a simple example where you will set a public github repo as a **Pipeline Resource**. 
 
@@ -198,7 +200,7 @@ Here are some ideas on how to tackle the pipeline run:
 
 You can manually use the dashboard to trigger the PipelineRuns by going to the "pipelineruns" tab and clicking "Create PipelineRun".
 
-Or we can generate the pipeline run dynamically using a name + timestamp approach:
+Or we can generate the PipelineRun yaml file using a name + timestamp approach.
 
     cat <<EOF >./pipeline-run-$(date +%s).yaml
     apiVersion: tekton.dev/v1alpha1
@@ -214,13 +216,13 @@ Or we can generate the pipeline run dynamically using a name + timestamp approac
             name: github-repo
     EOF
 
-You would then need to create that PipelineRun  script:
+You would then need to create that PipelineRun by running the yaml file with a "kubecl create -f ..." command:
 
     $ kubecl create -f pipeline-run-xxxxx.yaml
 
 An approach I felt worked better:
 
-You can dynamically create PipelineRuns using the "kubectl create" command directly, this will just create the kubernetes resource and run it but not save a file:
+You can create PipelineRuns using the "kubectl create" command directly via **stdin**, this will just create the kubernetes resource and run it but not save a file:
 
     cat <<EOF | kubectl create -f -
     apiVersion: tekton.dev/v1alpha1
@@ -240,12 +242,40 @@ Response Example:
 
     pipelinerun.tekton.dev/pipelinerun-test-1574241433 created
 
-Going forwards in these examples I'm going to stick with the dynamic approach.
+Going forwards in these examples I'm going to stick with the approach above, using the stdin approach and not creating yaml files, rather create PipelineRuns directly using the yaml provided as the EOF. I've just shared both approaches so you can tweak the examples for your needs.
 
 ### Review Example 1
 
-Now that you have run through an example, let's quickly visualise the Tekton flow we created:
-
-./images/TektonExample1.png
+Now that you have run through an example, let's quickly visualise the Tekton flow we created in Example 1:
 
 ![Tekton Example 1 Diagram](./images/TektonExample1.png)
+
+Some notes:
+
+The PipelineResource is very explicitly added to every resource in the flow. 
+Task references the PipelineResource
+Pipeline references the PipelineResource
+PipelineRun references the PipelineResource
+
+## Example 2
+
+A simple image building pipeline
+
+### Goal
+
+Run a pipeline that will use a public github repo, build an image using the Dockerfile and run a smoketest to check the image runs as expected.
+
+#### Side Tutorial
+
+Before we try create an image building solution using tekton, let's understand Kaniko in isolation. 
+
+##### Kaniko
+
+[https://github.com/GoogleContainerTools/kaniko](https://github.com/GoogleContainerTools/kaniko)
+
+##### Kaniko Tutorial
+
+Here is a quick tutorial on building images with Kaniko outside of Tekton (to get an understanding before trying to wrap Tekton around it).
+
+[./kaniko/TUTORIAL.md](./kaniko/TUTORIAL.md)
+
