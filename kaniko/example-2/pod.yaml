@@ -16,14 +16,4 @@ spec:
       args: ["--dockerfile=Dockerfile",
               "--context=git://github.com/youruser/repo",
               "--destination=index.docker.io/youruser/repo:example2"] # replace with your dockerhub account eg: index.docker.io/youruser/repo
-      volumeMounts:
-      - name: kaniko-secret
-        mountPath: /root
     restartPolicy: Never
-    volumes:
-    - name: kaniko-secret
-      secret:
-        secretName: regcred
-        items:
-        - key: .dockerconfigjson
-          path: .docker/config.json
