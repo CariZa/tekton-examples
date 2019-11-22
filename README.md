@@ -158,6 +158,7 @@ Some gotchas:
 
 - Only run the pipelinerun once all the resources have successfully been created
 
+
     $ kubectl get pipeline,pipelineresource,task
 
 You should see these resources

@@ -28,6 +28,8 @@ Create these two files:
 - configmap.yaml
 - pod.yaml
 
+Commands:
+
     $ kubectl create -f ./example-1/configmap.yaml
     $ kubectl create -f ./example-1/pod.yaml
 
@@ -48,6 +50,8 @@ We are going to build an image using files from a githun repo (github.com/cariza
 Create this file:
 
 - pod.yaml
+
+Command:
 
     $ kubectl create -f ./example-2/pod.yaml
 
