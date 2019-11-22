@@ -130,7 +130,10 @@ Docker pull:
 
 To run you would need to create a local dockerfile and use a volume to pass it in to kaniko:
 
- Dockerfile
+Dockerfile
+
+    FROM ubuntu
+    ENTRYPOINT ["/bin/bash", "-c", "echo hello"]
 
 Run the imate with docker (from the same folder as your Dockerfile):
 
