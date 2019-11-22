@@ -14,7 +14,7 @@ This tutorial is using
 
     --context=dir://workspace
 
-We are going to build an image using files we place in a folder location (/workspace), we will do this by using a volumeMount and mount the contents of a configmap into the running Kaniko pod.
+We are going to build an image using files we place inside the running kaniko pod at a folder location (/workspace), we will do this by using a volumeMount and mount the contents of a configmap into the running Kaniko pod.
 
 ### Setup
 
