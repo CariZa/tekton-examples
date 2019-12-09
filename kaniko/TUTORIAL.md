@@ -117,7 +117,7 @@ Official docs show more options: [https://github.com/GoogleContainerTools/kaniko
 
 This argument refers to the destination Kaniko will be sending the built and tagged image (provided Kaniko has permission - eg using the docker-registry secret credentials):
 
-    --destination=<user-name>/<repo>
+    --destination=<user-name>/<repo>:tag
 
 
 ## Run kaniko locally using docker

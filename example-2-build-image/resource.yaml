@@ -1,0 +1,34 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: github-repo
+spec:
+  type: git
+  params:
+    - name: url
+      value: https://github.com/CariZa/empty-hello-image   
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: dockerhub-image
+spec:
+  type: image
+  params:
+    - name: url
+      value: index.docker.io/cariza/tekton-prac:tekton-pipeline
+---
+# TODO: Set this up so that 
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: test-cluster
+spec:
+  type: cluster
+  params:
+    - name: url
+      value: https://10.10.10.10 # url to the cluster master node
+    - name: cadata
+      value: LS0tLS1CRUdJTiBDRVJ.....
+    - name: token
+      value: ZXlKaGJHY2lPaU....

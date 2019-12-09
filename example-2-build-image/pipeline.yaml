@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: build-pipeline
+spec:
+  resources:
+  - name: github-repo
+    type: git
+  - name: dockerhub-image
+    type: image
+  tasks:
+  - name: build
+    taskRef:
+      name: build
+    resources:
+      inputs:
+      - name: github-repo
+        resource: github-repo     
+      - name: dockerhub-image
+        resource: dockerhub-image      
+  - name: run
+    taskRef:
+      name: run
+    runAfter:
+    - build
+    resources:
+      inputs: 
+      - name: dockerhub-image
+        resource: dockerhub-image

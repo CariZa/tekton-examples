@@ -1,16 +1,50 @@
 # tekton-examples
 
+
+# Examples
+
+These examples are assuming you have made a clone of this repo, or at least copied the files and structured them like they are in this repo.
+
+## Index
+
+- [Example 1](#example-1) Using Tekton Pipelines with a github Repo to run a cat step
+- [Example 2](#example-2) A simple docker image building pipeline using Tekton and Kaniko
+  - [Side tutorial - Kaniko Tutorial](./kaniko/TUTORIAL.md)
+
+---
+
+# Introduction 
+
 A practice repo to collect examples of using tekton with kubernetes.
 
 Please note, this is just a reference for practicing with, this is not necessarily production ready.
 
-** Information on how to run the examples are below the references **
+### Just a quick opinion upfront on Tekton and it's usage (opinion is my own)
+
+Upfront my recommendation is not to use Tekton for just a single project that needs CI/CD. There are simpler solutions for a quick solve for CI/CD. 
+
+* [Gitlab CI/CD](https://docs.gitlab.com/ee/ci/)
+* AgroCD
+
+Tekton seems more appropriate for building generic pipelines that would solve organisation wide CI/CD requirements. Tekton would be a long term strategy to standardize CI/CD across an organisation, and could create and add more complexity (rather than improve on) if not pre-planned and uniformly adopted.
+
+If you would like to use tools that are built on top of Tekton that abstract away some of the complexity of Tekton:
+
+* [JenkinsX](https://jenkins-x.io/)
+* As I find more I will add to this list...
+
+# Setup
+
+[![asciicast](https://asciinema.org/a/286482.svg)](https://asciinema.org/a/286482)
 
 ## Tekton setup notes
 
 These steps were taken and tweaked from this source:
 
 [https://github.com/tektoncd/pipeline/blob/master/docs/install.md](https://github.com/tektoncd/pipeline/blob/master/docs/install.md)
+
+
+### Environment variables
 
 Setup some environment variables:
 
@@ -22,21 +56,25 @@ Check values are set:
 
     echo $CLUSTER_NAME && echo $CLUSTER_ZONE && echo $NUM_NODES
 
-Create the gc cluster:
+### Kubernetes cluster
 
-    $ gcloud container clusters create $CLUSTER_NAME --zone=$CLUSTER_ZONE --num-nodes=$NUM_NODES
+Create the gc kubernetes cluster:
+
+    $ gcloud container clusters create $CLUSTER_NAME \
+      --zone=$CLUSTER_ZONE \
+      --num-nodes=$NUM_NODES
 
     $ gcloud container clusters list
 
-To delete the cluster (if you want to start from scratch again):
+**Tip:** To delete the cluster (if you want to start from scratch again):
 
-    $ gcloud container clusters delete $CLUSTER_NAME
+    $ gcloud container clusters delete $CLUSTER_NAME --zone=$CLUSTER_ZONE
 
 Grant cluster-admin permissions to the current user:
 
     $ kubectl create clusterrolebinding cluster-admin-binding \
-    --clusterrole=cluster-admin \
-    --user=$(gcloud config get-value core/account)
+      --clusterrole=cluster-admin \
+      --user=$(gcloud config get-value core/account)
 
 Install Tekton Pipelines:
 
@@ -51,33 +89,31 @@ You should see some pods in the "tekton-pipelines" namespace:
     tekton-pipelines-controller-...
     tekton-pipelines-webhook-...
 
-
-
 ## Notes on Tekton
 
 Tekton is made up of **6 main components**:
 
-* Step 
+* **Step**
 
     run commands
 
-* Task 
+* **Task**
 
     list of steps
 
-* Pipeline 
+* **Pipeline**
 
     graph of tasks
 
-* Pipeline Resource 
+* **Pipeline Resource**
 
     a resource that is declared and then referenced and used in tasks and pipelines
 
-* Task Run 
+* **Task Run**
 
-    invoke a task  
+    invoke a task (Pipeline runs create Task Runs when run)
 
-* Pipeline Run
+* **Pipeline Run**
 
     invoke a pipeline
 
@@ -101,6 +137,8 @@ Tekton is made up of **6 main components**:
 
 # Dashboard
 
+[![asciicast](https://asciinema.org/a/VzHDh5EeIDeVHQv44X11ORhbL.svg)](https://asciinema.org/a/VzHDh5EeIDeVHQv44X11ORhbL)
+
 ### Setup the dashboard for visibility 
 
 Notes on setting up the dashboard:
@@ -123,7 +161,7 @@ Find the dashboard pod:
 
 View the dashboard by using port-forward:
 
-    $ kubectl port-forward tekton-dashboard-xxx-xxx -n tekton-pipelines  9097:9097
+    $ kubectl port-forward tekton-dashboard-xxx-xxx -n tekton-pipelines 9097:9097
 
 You should now be able to view the dashboard at:
 
@@ -136,28 +174,25 @@ You should now be able to view the dashboard at:
 
 These examples are assuming you have made a clone of this repo, or at least copied the files and structured them like they are in this repo.
 
-## Example 1
+## Index
 
-A simple github read process
+- [Example 1](#example-1) Using Tekton Pipelines with a github Repo to run a cat step
+- [Example 2](#example-2) A simple docker image building pipeline using Tekton and Kaniko
+  - [Side tutorial - Kaniko Tutorial](./kaniko/TUTORIAL.md)
+
+# Example 1
+
+Using Tekton Pipelines with a github Repo to run a cat step
+
+[![asciicast](https://asciinema.org/a/tPHU34Vrqxf3yxpy3yNIVIF5L.svg)](https://asciinema.org/a/tPHU34Vrqxf3yxpy3yNIVIF5L)
 
 ### Goal: 
 
 Run a simple example where you will set a public github repo as a **Pipeline Resource**. 
 
-Some more notes:
-
-A **task** will pull this repo into an ubuntu image and using the **Pipeline Resource** as an input.
-The pipeline will list the task and also map in the **Pipeline Resource** as input.
-
-
 Run these yaml scripts in this order:
 
-    $ kubectl create -f ./example-github-read/
-
-Some gotchas:
-
-- Only run the pipelinerun once all the resources have successfully been created
-
+    $ kubectl apply -f ./example-1-github-read/
 
     $ kubectl get pipeline,pipelineresource,task
 
@@ -174,28 +209,11 @@ You should see these resources
 
 Check the dashboard:
 
-[http://localhost:9097/#/namespaces/default/pipelineruns/pipelinerun-test](http://localhost:9097/#/namespaces/default/pipelineruns/pipelinerun-test)
-
-
-Creating the PipelineRun
-
-If you try run a PipelineRun as a single yaml script, for example:
-
-    $ kubectl create -f ./example-github-read/pipeline-run.yaml 
-
-The first time it will create and run fine. On the second attempt you will get an error.
-
-The PipelineRun is the trigger, so you would keep the trigger seperate from the configuration/setup.
-
-If we relooked this example a bit we ran these setup steps all at once:
-
-    $ kubectl create -f ./example-github-read/resource.yaml
-    $ kubectl create -f ./example-github-read/task.yaml
-    $ kubectl create -f ./example-github-read/pipeline.yaml 
-
-Then every time we want to trigger the pipeline we would need to have a unique named PipelineRun.
+[http://localhost:9097/#/namespaces/default/pipelines](http://localhost:9097/#/namespaces/default/pipelines)
 
 ### PipelineRuns
+
+The PipelineRun is the trigger of the pipeline, keep the trigger seperate from the configuration/setup and run it when you want the pipeline to run. Every time we want to trigger the pipeline we would need to have a unique named PipelineRun.
 
 Here are some ideas on how to tackle the pipeline run:
 
@@ -203,19 +221,23 @@ You can manually use the dashboard to trigger the PipelineRuns by going to the "
 
 Or we can generate the PipelineRun yaml file using a name + timestamp approach.
 
-    cat <<EOF >./pipeline-run-$(date +%s).yaml
-    apiVersion: tekton.dev/v1alpha1
-    kind: PipelineRun
-    metadata:
-      name: pipelinerun-test-$(date +%s)
-    spec:
-      pipelineRef:
-        name: pipeline-test
-      resources:
-        - name: github-repo
-          resourceRef:
-            name: github-repo
-    EOF
+### PipelineRun Trigger
+
+```yaml
+cat <<EOF >./pipeline-run-$(date +%s).yaml
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  name: pipelinerun-test-$(date +%s)
+spec:
+  pipelineRef:
+    name: pipeline-test
+  resources:
+    - name: github-repo
+      resourceRef:
+        name: github-repo
+EOF
+```
 
 You would then need to create that PipelineRun by running the yaml file with a "kubecl create -f ..." command:
 
@@ -225,25 +247,31 @@ An approach I felt worked better:
 
 You can create PipelineRuns using the "kubectl create" command directly via **stdin**, this will just create the kubernetes resource and run it but not save a file:
 
-    cat <<EOF | kubectl create -f -
-    apiVersion: tekton.dev/v1alpha1
-    kind: PipelineRun
-    metadata:
-      name: pipelinerun-test-$(date +%s)
-    spec:
-      pipelineRef:
-        name: pipeline-test
-      resources:
-        - name: github-repo
-          resourceRef:
-            name: github-repo
-    EOF
+```yaml
+cat <<EOF | kubectl create -f -
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  name: pipelinerun-test-$(date +%s)
+spec:
+  pipelineRef:
+    name: pipeline-test
+  resources:
+    - name: github-repo
+      resourceRef:
+        name: github-repo
+EOF
+```
 
 Response Example:
 
     pipelinerun.tekton.dev/pipelinerun-test-1574241433 created
 
 Going forwards in these examples I'm going to stick with the approach above, using the stdin approach and not creating yaml files, rather create PipelineRuns directly using the yaml provided as the EOF. I've just shared both approaches so you can tweak the examples for your needs.
+
+Check the dashboard:
+
+[http://localhost:9097/#/namespaces/default/pipelineruns](http://localhost:9097/#/namespaces/default/pipelineruns)
 
 ### Review Example 1
 
@@ -258,9 +286,50 @@ Task references the PipelineResource
 Pipeline references the PipelineResource
 PipelineRun references the PipelineResource
 
-## Example 2
+### Use a different git repo
 
-A simple image building pipeline
+To show the flexibility Tekton offers, let's create a new resource:
+
+```yaml
+cat <<EOF | kubectl create -f -
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: another-github-repo
+spec:
+  type: git
+  params:
+    - name: url
+      value: https://github.com/CariZa/empty-hello-image
+EOF
+```
+
+Then create a new PipelineRun passing in the new git Resource to the Pipeline
+
+
+```yaml
+cat <<EOF | kubectl create -f -
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  name: pipelinerun-test-$(date +%s)
+spec:
+  pipelineRef:
+    name: pipeline-test
+  resources:
+    - name: github-repo
+      resourceRef:
+        name: another-github-repo
+EOF
+```
+
+You were able to use the same pipeline for 2 different repos
+
+---
+
+# Example 2
+
+A simple docker image building pipeline using Tekton and Kaniko
 
 ### Goal
 
@@ -268,7 +337,7 @@ Run a pipeline that will use a public github repo, build an image using the Dock
 
 #### Side Tutorial
 
-Before we try create an image building solution using tekton, let's understand Kaniko in isolation. 
+Before we try create an image building solution using tekton, let's understand Kaniko in isolation. Then use Kaniko with Tekton.
 
 ##### Kaniko
 
@@ -278,5 +347,72 @@ Before we try create an image building solution using tekton, let's understand K
 
 Here is a quick tutorial on building images with Kaniko outside of Tekton (to get an understanding before trying to wrap Tekton around it).
 
-[./kaniko/TUTORIAL.md](./kaniko/TUTORIAL.md)
+[./kaniko/TUTORIAL.md](kaniko/TUTORIAL.md)
+
+Back to example 2.
+
+### Goal
+
+Run a pipeline that will use a public github repo, build an image using the Kaniko and a specified Dockerfile and run the built image as a test.
+
+Create a Dockerhub Secret
+
+In order for Kaniko to connect with dockerhub you need to create the kubernetes secret:
+
+    $ kubectl create secret docker-registry regcred \
+    --docker-server=index.docker.io \
+    --docker-username=username \
+    --docker-password=password \
+    --docker-email=email@address.com
+
+Run the scripts:
+
+    $ kubectl apply -f ./example-2-build-image/
+
+#### PipelineRun Trigger
+
+```yaml
+cat <<EOF | kubectl create -f -
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  name: build-pipeline-test-$(date +%s)
+spec:
+  pipelineRef:
+    name: build-pipeline
+  resources:
+  - name: github-repo
+    resourceRef:
+      name: github-repo
+  - name: dockerhub-image
+    resourceRef:
+      name: dockerhub-image
+  podTemplate:
+    volumes:
+    - name: kaniko-secret
+      secret:
+        secretName: regcred
+        items:
+        - key: .dockerconfigjson
+          path: .docker/config.json
+EOF
+```
+
+In order for the .docker/config.json to exist you need to create a configmap to that you can use as a volume mount:
+
+This will be added to the step config of the Task:
+
+```yaml
+  steps:
+  ...
+  - name: build
+    ...
+    volumeMounts:
+    - name: kaniko-secret
+      mountPath: /builder/home
+```
+
+The "kaniko-secret" is registered in the PipelineRun, it's important to keep that in mind.
+
+Once your PipelineRun has completed you can go to your docker hub repo and check that a new image has been created and pushed to docker hub with the tag you provided.
 
