@@ -28,6 +28,58 @@ Create these two files:
 - configmap.yaml
 - pod.yaml
 
+Configmap.yaml
+
+```apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dockerfile-configmap
+  namespace: default
+data:
+  dockerfile: |
+    FROM ubuntu
+    ENTRYPOINT ["/bin/bash", "-c", "echo hello"]```
+
+Pod.yaml
+
+```apiVersion: v1
+kind: Pod
+metadata:
+    name: kaniko-example-1
+spec:
+    containers:
+    - name: kaniko
+      readinessProbe:
+        exec:
+          command:
+          - cat
+          - /workspace/dockerfile
+        initialDelaySeconds: 1
+        periodSeconds: 5
+      image: gcr.io/kaniko-project/executor:latest
+      args: ["--dockerfile=/workspace/dockerfile",
+              "--context=dir://workspace",
+              "--destination=index.docker.io/youruser/repo:example1"] # replace with your dockerhub account
+      volumeMounts:
+      - name: kaniko-secret
+        mountPath: /root
+      - name: dockerfile-source
+        mountPath: /workspace
+    restartPolicy: Never
+    volumes:
+    - name: kaniko-secret
+      secret:
+        secretName: regcred
+        items:
+        - key: .dockerconfigjson
+          path: .docker/config.json
+    - name: dockerfile-source
+      configMap:
+        name: dockerfile-configmap
+        items:
+        - key: dockerfile
+          path: dockerfile```
+
 Note
 
 You need to just tweak the pod.yaml file and replace 
