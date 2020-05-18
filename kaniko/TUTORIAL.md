@@ -38,7 +38,8 @@ metadata:
 data:
   dockerfile: |
     FROM ubuntu
-    ENTRYPOINT ["/bin/bash", "-c", "echo hello"]```
+    ENTRYPOINT ["/bin/bash", "-c", "echo hello"]
+```
 
 Pod.yaml
 
@@ -78,7 +79,8 @@ spec:
         name: dockerfile-configmap
         items:
         - key: dockerfile
-          path: dockerfile```
+          path: dockerfile
+```
 
 Note
 
